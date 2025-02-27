@@ -69,3 +69,23 @@ document.querySelectorAll('.csv-button').forEach(button => {
     document.getElementById('csvUrlInput').value = csvUrl;
   });
 });
+
+
+
+function displayWords(words) {
+  const wordList = document.getElementById('wordList');
+  const wordCount = document.getElementById('wordCount');
+  wordList.innerHTML = ''; // Clear previous list
+  words.forEach(word => {
+    const li = document.createElement('li');
+    li.textContent = word;
+    const speakerIcon = document.createElement('img');
+    speakerIcon.src = 'speaker-icon.jpg';
+    speakerIcon.alt = 'Speaker Icon';
+    speakerIcon.classList.add('speaker-icon');
+    speakerIcon.addEventListener('click', () => speakWord(word));
+    li.appendChild(speakerIcon);
+    wordList.appendChild(li);
+  });
+  wordCount.textContent = `Words: ${words.length}`; // Update word count
+}

@@ -25,11 +25,12 @@ body {
 /* Input Section */
 .input-section {
   flex: 1;
-  background-color: #333; /* Dark gray background */
+  background-color: #f0f0f0; /* Light grey background */
   padding: 20px;
   border-radius: 10px;
   margin-right: 10px;
-  border-right: 2px dotted white; /* Dotted line separator */
+  border-right: 2px dotted #ccc; /* Dotted line separator */
+  color: #333; /* Dark text for better readability */
 }
 
 .input-section textarea,
@@ -39,8 +40,8 @@ body {
   margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: #444; /* Darker input fields */
-  color: white; /* White text in input fields */
+  background-color: white; /* White input fields */
+  color: #333; /* Dark text in input fields */
 }
 
 .input-section button {
@@ -64,6 +65,7 @@ body {
 
 .csv-buttons h3 {
   margin-bottom: 10px;
+  color: #333; /* Dark text for headings */
 }
 
 .csv-button {
@@ -71,23 +73,24 @@ body {
   width: 100%;
   padding: 10px;
   margin-bottom: 5px;
-  background-color: #555;
-  color: white;
+  background-color: #ddd; /* Light grey buttons */
+  color: #333; /* Dark text */
   border: none;
   border-radius: 5px;
   cursor: pointer;
 }
 
 .csv-button:hover {
-  background-color: #777;
+  background-color: #ccc; /* Slightly darker on hover */
 }
 
 /* Output Section */
 .output-section {
   flex: 1;
-  background-color: #333; /* Dark gray background */
+  background-color: #f0f0f0; /* Light grey background */
   padding: 20px;
   border-radius: 10px;
+  color: #333; /* Dark text for better readability */
 }
 
 #wordList {
@@ -101,6 +104,7 @@ body {
   align-items: center;
   padding: 10px;
   border-bottom: 1px solid #ccc;
+  color: #333; /* Dark text for list items */
 }
 
 #wordList li:last-child {
@@ -125,4 +129,21 @@ body {
 
 #autoDictation:hover {
   background-color: #f57c00;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  background-color: #ddd; /* Light grey background */
+  color: #333; /* Dark text */
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+/* Word Counter */
+#wordCount {
+  color: #333; /* Dark text for word counter */
 }
