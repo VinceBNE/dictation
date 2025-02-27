@@ -37,7 +37,7 @@ function displayWords(words) {
     li.textContent = word;
     const speakerIcon = document.createElement('img');
     speakerIcon.src = 'speaker-icon.jpg'; // Updated to use JPG
-    speakerIcon.alt = 'Speaker Icon'; // Added alt text for accessibility
+    speakerIcon.alt = 'Speaker Icon'; // Accessibility
     speakerIcon.classList.add('speaker-icon');
     speakerIcon.addEventListener('click', () => speakWord(word));
     li.appendChild(speakerIcon);
@@ -60,4 +60,12 @@ document.getElementById('autoDictation').addEventListener('click', () => {
   }
 
   speakNextWord();
+});
+
+// Add event listeners to CSV buttons
+document.querySelectorAll('.csv-button').forEach(button => {
+  button.addEventListener('click', () => {
+    const csvUrl = button.getAttribute('data-url');
+    document.getElementById('csvUrlInput').value = csvUrl;
+  });
 });
