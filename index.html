@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kids Dictation Practice</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Top Section -->
+  <div class="top-section">
+    <h1>Welcome to Dictation Practice!</h1>
+    <p>Type or paste your word list below, or provide a CSV URL. Click the speaker icon to hear the word, or use the auto-dictation button to practice!</p>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Input Section -->
+    <div class="input-section">
+      <h2>Input Words</h2>
+      <textarea id="wordInput" placeholder="Type or paste words here, separated by commas..."></textarea>
+      <input type="text" id="csvUrlInput" placeholder="Or enter a CSV URL...">
+      <button id="loadWords">Load Words</button>
+      <label for="interval">Auto-Dictation Interval (seconds):</label>
+      <input type="number" id="interval" value="2" min="1">
+    </div>
+
+    <!-- Output Section -->
+    <div class="output-section">
+      <h2>Word List</h2>
+      <ul id="wordList"></ul>
+      <button id="autoDictation">Start Auto-Dictation</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
