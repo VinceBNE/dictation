@@ -36,7 +36,7 @@ function displayWords(words) {
     const li = document.createElement('li');
     li.textContent = word;
     const speakerIcon = document.createElement('img');
-    speakerIcon.src = 'speaker-icon.png'; // Add a speaker icon image
+    speakerIcon.src = 'speaker-icon.jpg'; // Add a speaker icon image
     speakerIcon.classList.add('speaker-icon');
     speakerIcon.addEventListener('click', () => speakWord(word));
     li.appendChild(speakerIcon);
