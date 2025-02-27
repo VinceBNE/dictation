@@ -3,7 +3,7 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: black; /* Black background for the entire page */
+  background-color: grey; /* Black background for the entire page */
   color: white; /* Default text color */
 }
 
@@ -55,7 +55,7 @@ body {
 }
 
 .input-section button:hover {
-  background-color: #1976d2;
+  background-color: #f0f0f0;
 }
 
 /* CSV Buttons */
