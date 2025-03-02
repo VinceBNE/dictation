@@ -3,7 +3,7 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: grey; /* Black background for the entire page */
+  background-color: black; /* Black background for the entire page */
   color: white; /* Default text color */
 }
 
@@ -55,7 +55,7 @@ body {
 }
 
 .input-section button:hover {
-  background-color: #f0f0f0;
+  background-color: #1976d2;
 }
 
 /* CSV Buttons */
@@ -129,6 +129,21 @@ body {
 
 #autoDictation:hover {
   background-color: #f57c00;
+}
+
+#stopDictation {
+  padding: 10px 20px;
+  background-color: #ff4444; /* Red background */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  margin-left: 10px; /* Add some space between the buttons */
+}
+
+#stopDictation:hover {
+  background-color: #cc0000; /* Darker red on hover */
 }
 
 /* Loading Spinner */
