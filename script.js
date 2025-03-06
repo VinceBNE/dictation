@@ -2,6 +2,77 @@
 document.addEventListener('DOMContentLoaded', function() {
   console.log('DOM loaded - initializing script');
   
+  // Initialize voices as soon as possible
+  let voices = [];
+  
+  // Function to initialize and load voices
+  function initVoices() {
+    console.log('Initializing voices');
+    return new Promise((resolve) => {
+      voices = window.speechSynthesis.getVoices();
+      if (voices.length > 0) {
+        console.log('Voices loaded immediately:', voices.length);
+        resolve(voices);
+      } else {
+        console.log('Waiting for voices to load...');
+        window.speechSynthesis.onvoiceschanged = function() {
+          voices = window.speechSynthesis.getVoices();
+          console.log('Voices loaded asynchronously:', voices.length);
+          resolve(voices);
+        };
+        
+        // Fallback if onvoiceschanged doesn't trigger
+        setTimeout(() => {
+          voices = window.speechSynthesis.getVoices();
+          console.log('Voices loaded via timeout:', voices.length);
+          resolve(voices);
+        }, 1000);
+      }
+    });
+  }
+  
+  // Initialize voices right away
+  if ('speechSynthesis' in window) {
+    initVoices();
+  } else {
+    console.error('Speech synthesis not supported in this browser');
+  }
+  
+  // Function to select the best male Australian voice or acceptable alternative
+  function getBestVoice() {
+    const allVoices = window.speechSynthesis.getVoices();
+    console.log('Available voices:', allVoices.map(v => `${v.name} (${v.lang}) [${v.localService ? 'local' : 'remote'}]`));
+    
+    // First priority: Daniel (Australian male) or other Australian male voices
+    let voice = allVoices.find(v => 
+      (v.name.includes('Daniel') || v.name.toLowerCase().includes('australian male')) && 
+      v.lang.startsWith('en')
+    );
+    
+    // Second priority: Any Australian voice
+    if (!voice) {
+      voice = allVoices.find(v => v.lang === 'en-AU');
+    }
+    
+    // Third priority: Any English male voice
+    if (!voice) {
+      voice = allVoices.find(v => 
+        (v.name.includes('Male') || v.name.includes('David') || 
+         v.name.includes('Mark') || v.name.includes('James') || 
+         v.name.includes('Paul') || v.name.includes('George')) && 
+        v.lang.startsWith('en')
+      );
+    }
+    
+    // Fourth priority: Any English voice
+    if (!voice) {
+      voice = allVoices.find(v => v.lang.startsWith('en'));
+    }
+    
+    console.log('Selected voice:', voice ? `${voice.name} (${voice.lang})` : 'Default voice');
+    return voice;
+  }
+  
   // Function to load words from CSV URL
   function loadWordsFromCSV(url) {
     console.log('Loading CSV from URL:', url);
@@ -81,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // Function to speak a word with Australian male voice
+  // Function to speak a word with specified voice settings
   function speakWord(word) {
     console.log('Speaking word:', word);
     if ('speechSynthesis' in window) {
@@ -90,39 +161,18 @@ document.addEventListener('DOMContentLoaded', function() {
       
       const utterance = new SpeechSynthesisUtterance(word);
       
-      // Try to set Australian male voice
-      const voices = window.speechSynthesis.getVoices();
-      console.log('Available voices:', voices);
+      // Set voice characteristics
+      utterance.volume = 1.0;  // 0 to 1
+      utterance.rate = 0.9;    // 0.1 to 10
+      utterance.pitch = 0.8;   // 0 to 2 - lower for male voice
       
-      // Look for Australian male voice
-      let australianVoice = voices.find(voice => 
-        voice.name.toLowerCase().includes('australian') && 
-        voice.name.toLowerCase().includes('male')
-      );
-      
-      // If no specific Australian male voice, try to find any Australian voice
-      if (!australianVoice) {
-        australianVoice = voices.find(voice => 
-          voice.name.toLowerCase().includes('australian') || 
-          voice.lang === 'en-AU'
-        );
+      // Set the best available voice
+      const selectedVoice = getBestVoice();
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
       }
       
-      // If no Australian voice at all, try to find any male English voice
-      if (!australianVoice) {
-        australianVoice = voices.find(voice => 
-          voice.name.toLowerCase().includes('male') && 
-          voice.lang.startsWith('en')
-        );
-      }
-      
-      if (australianVoice) {
-        console.log('Using voice:', australianVoice.name);
-        utterance.voice = australianVoice;
-      } else {
-        console.log('No suitable voice found, using default');
-      }
-      
+      // Speak the word
       window.speechSynthesis.speak(utterance);
     } else {
       console.error('Speech synthesis not supported');
@@ -173,6 +223,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function stopAutoDictation() {
     console.log('Stopping auto-dictation');
     clearInterval(autoDictationInterval);
+    window.speechSynthesis.cancel(); // Stop any ongoing speech
     document.getElementById('autoDictation').disabled = false;
     document.getElementById('stopDictation').disabled = true;
     dictationActive = false;
@@ -269,13 +320,16 @@ document.addEventListener('DOMContentLoaded', function() {
     console.error('Stop-dictation button not found');
   }
 
-  // Handle voices loading (needed for some browsers)
-  // Some browsers load voices asynchronously
-  if ('speechSynthesis' in window) {
-    window.speechSynthesis.onvoiceschanged = function() {
-      console.log('Voices loaded:', window.speechSynthesis.getVoices().length);
-    };
-  }
+  // Add a voice test button to check available voices
+  const outputSection = document.querySelector('.output-section');
+  const voiceTestButton = document.createElement('button');
+  voiceTestButton.id = 'voiceTest';
+  voiceTestButton.textContent = 'Test Voice';
+  voiceTestButton.style.marginTop = '20px';
+  voiceTestButton.addEventListener('click', () => {
+    speakWord('This is a test of the dictation voice');
+  });
+  outputSection.appendChild(voiceTestButton);
 
   console.log('Script initialization complete');
 });
