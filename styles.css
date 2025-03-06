@@ -162,3 +162,36 @@ body {
 #wordCount {
   color: #333; /* Dark text for word counter */
 }
+
+
+/* Add this to your existing styles.css file */
+
+/* Current word highlighting */
+.current-word {
+  background-color: #4682B4; /* Steel blue background */
+  color: white !important;
+  font-weight: bold;
+  border-radius: 5px;
+  padding: 5px !important;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  position: relative;
+  animation: pulse 1s infinite;
+}
+
+/* Pulse animation for current word */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 10px rgba(70, 130, 180, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Speaker icon in current word */
+.current-word .speaker-icon {
+  filter: brightness(1.5);
+}
