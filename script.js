@@ -1,47 +1,188 @@
-// Function to load words from CSV URL
-function loadWordsFromCSV(url) {
-  return fetch(url)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Failed to load CSV');
+// Wait for the DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM loaded - initializing script');
+  
+  // Function to load words from CSV URL
+  function loadWordsFromCSV(url) {
+    console.log('Loading CSV from URL:', url);
+    return fetch(url)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Failed to load CSV: ${response.status} ${response.statusText}`);
+        }
+        return response.text();
+      })
+      .then(data => {
+        console.log('CSV data loaded, processing...');
+        return data.split(',').map(word => word.trim()); // Split CSV by commas and trim whitespace
+      });
+  }
+
+  // Function to display words in the list
+  function displayWords(words) {
+    console.log('Displaying words:', words);
+    const wordList = document.getElementById('wordList');
+    wordList.innerHTML = ''; // Clear previous list
+    
+    words.forEach(word => {
+      if (word) { // Only add non-empty words
+        const li = document.createElement('li');
+        li.textContent = word;
+        
+        // Create speaker icon
+        const speakerIcon = document.createElement('img');
+        speakerIcon.src = 'speaker-icon.png'; // Make sure this image exists
+        speakerIcon.alt = 'Speak';
+        speakerIcon.className = 'speaker-icon';
+        speakerIcon.addEventListener('click', () => {
+          speakWord(word);
+        });
+        
+        li.appendChild(speakerIcon);
+        wordList.appendChild(li);
       }
-      return response.text();
-    })
-    .then(data => {
-      return data.split(',').map(word => word.trim()); // Split CSV by commas and trim whitespace
     });
-}
+  }
 
-// Load words from input or CSV URL
-document.getElementById('loadWords').addEventListener('click', () => {
-  const wordInput = document.getElementById('wordInput').value.trim();
-  const csvUrlInput = document.getElementById('csvUrlInput').value.trim();
-  const wordList = document.getElementById('wordList');
-  const loadingSpinner = document.getElementById('loadingSpinner');
+  // Function to speak a word
+  function speakWord(word) {
+    console.log('Speaking word:', word);
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(word);
+      window.speechSynthesis.speak(utterance);
+    } else {
+      console.error('Speech synthesis not supported');
+      alert('Speech synthesis is not supported in your browser');
+    }
+  }
 
-  wordList.innerHTML = ''; // Clear previous list
-  loadingSpinner.style.display = 'flex'; // Show loading spinner
+  // Variables for auto-dictation
+  let autoDictationInterval;
+  let currentWordIndex = 0;
+  let wordArray = [];
 
-  let words = [];
+  // Start auto-dictation
+  function startAutoDictation() {
+    console.log('Starting auto-dictation');
+    const interval = parseInt(document.getElementById('interval').value) * 1000;
+    if (wordArray.length === 0) {
+      alert('Please load words first');
+      return;
+    }
+    
+    currentWordIndex = 0;
+    document.getElementById('autoDictation').disabled = true;
+    document.getElementById('stopDictation').disabled = false;
+    
+    // Speak the first word immediately
+    speakWord(wordArray[currentWordIndex]);
+    
+    // Set up interval for subsequent words
+    autoDictationInterval = setInterval(() => {
+      currentWordIndex++;
+      if (currentWordIndex >= wordArray.length) {
+        stopAutoDictation();
+        return;
+      }
+      speakWord(wordArray[currentWordIndex]);
+    }, interval);
+  }
 
-  if (wordInput) {
-    words = wordInput.split(',').map(word => word.trim()); // Load from text input
-    loadingSpinner.style.display = 'none'; // Hide loading spinner
-    displayWords(words);
-  } else if (csvUrlInput) {
-    loadWordsFromCSV(csvUrlInput)
+  // Stop auto-dictation
+  function stopAutoDictation() {
+    console.log('Stopping auto-dictation');
+    clearInterval(autoDictationInterval);
+    document.getElementById('autoDictation').disabled = false;
+    document.getElementById('stopDictation').disabled = true;
+  }
+
+  // Process CSV URL and load words
+  function processCSVUrl(url) {
+    console.log('Processing CSV URL:', url);
+    
+    // Create loading spinner if it doesn't exist
+    let loadingSpinner = document.getElementById('loadingSpinner');
+    if (!loadingSpinner) {
+      loadingSpinner = document.createElement('div');
+      loadingSpinner.id = 'loadingSpinner';
+      loadingSpinner.className = 'loading-spinner';
+      loadingSpinner.textContent = 'Loading...';
+      document.querySelector('.output-section').appendChild(loadingSpinner);
+    }
+    loadingSpinner.style.display = 'flex'; // Show loading spinner
+    
+    loadWordsFromCSV(url)
       .then(words => {
+        console.log('Words loaded successfully:', words);
+        wordArray = words;
         displayWords(words);
       })
       .catch(error => {
         console.error('Error loading CSV:', error);
-        alert('Failed to load CSV. Please check the URL and try again.');
+        alert('Failed to load CSV: ' + error.message);
       })
       .finally(() => {
         loadingSpinner.style.display = 'none'; // Hide loading spinner
       });
-  } else {
-    alert('Please enter words or a CSV URL.');
-    loadingSpinner.style.display = 'none'; // Hide loading spinner
   }
+
+  // Load words from input or CSV URL button
+  const loadWordsButton = document.getElementById('loadWords');
+  if (loadWordsButton) {
+    loadWordsButton.addEventListener('click', function() {
+      console.log('Load words button clicked');
+      const wordInput = document.getElementById('wordInput').value.trim();
+      const csvUrlInput = document.getElementById('csvUrlInput').value.trim();
+      
+      if (wordInput) {
+        console.log('Loading words from text input');
+        wordArray = wordInput.split(',').map(word => word.trim());
+        displayWords(wordArray);
+      } else if (csvUrlInput) {
+        processCSVUrl(csvUrlInput);
+      } else {
+        alert('Please enter words or a CSV URL.');
+      }
+    });
+  } else {
+    console.error('Load words button not found');
+  }
+
+  // Handle CSV buttons
+  const csvButtons = document.querySelectorAll('.csv-button');
+  console.log('Found CSV buttons:', csvButtons.length);
+  
+  csvButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      console.log('CSV button clicked:', this.textContent);
+      const url = this.getAttribute('data-url');
+      console.log('Button URL:', url);
+      
+      if (url) {
+        document.getElementById('csvUrlInput').value = url;
+        processCSVUrl(url);
+      } else {
+        console.error('No data-url attribute found on button');
+      }
+    });
+  });
+
+  // Set up auto-dictation button event listener
+  const autoDictationButton = document.getElementById('autoDictation');
+  if (autoDictationButton) {
+    autoDictationButton.addEventListener('click', startAutoDictation);
+  } else {
+    console.error('Auto-dictation button not found');
+  }
+
+  // Set up stop-dictation button event listener
+  const stopDictationButton = document.getElementById('stopDictation');
+  if (stopDictationButton) {
+    stopDictationButton.addEventListener('click', stopAutoDictation);
+    stopDictationButton.disabled = true;
+  } else {
+    console.error('Stop-dictation button not found');
+  }
+
+  console.log('Script initialization complete');
 });
