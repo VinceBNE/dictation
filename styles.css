@@ -1,3 +1,169 @@
+/* General Styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: black; /* Black background for the entire page */
+  color: white; /* Default text color */
+}
+
+/* Top Section */
+.top-section {
+  background-image: url('kids-background.jpg'); /* Add a kid-friendly image */
+  background-size: cover;
+  color: black; /* Black font color for welcome and instruction */
+  text-align: center;
+  padding: 20px;
+}
+
+/* Main Content */
+.main-content {
+  display: flex;
+  padding: 20px;
+}
+
+/* Input Section */
+.input-section {
+  flex: 1;
+  background-color: #f0f0f0; /* Light grey background */
+  padding: 20px;
+  border-radius: 10px;
+  margin-right: 10px;
+  border-right: 2px dotted #ccc; /* Dotted line separator */
+  color: #333; /* Dark text for better readability */
+}
+
+.input-section textarea,
+.input-section input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: white; /* White input fields */
+  color: #333; /* Dark text in input fields */
+}
+
+.input-section button {
+  padding: 10px 20px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.input-section button:hover {
+  background-color: #1976d2;
+}
+
+/* CSV Buttons */
+.csv-buttons {
+  margin-top: 20px;
+}
+
+.csv-buttons h3 {
+  margin-bottom: 10px;
+  color: #333; /* Dark text for headings */
+}
+
+.csv-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 5px;
+  background-color: #ddd; /* Light grey buttons */
+  color: #333; /* Dark text */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.csv-button:hover {
+  background-color: #ccc; /* Slightly darker on hover */
+}
+
+/* Output Section */
+.output-section {
+  flex: 1;
+  background-color: #f0f0f0; /* Light grey background */
+  padding: 20px;
+  border-radius: 10px;
+  color: #333; /* Dark text for better readability */
+}
+
+#wordList {
+  list-style-type: none;
+  padding: 0;
+}
+
+#wordList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  color: #333; /* Dark text for list items */
+}
+
+#wordList li:last-child {
+  border-bottom: none;
+}
+
+.speaker-icon {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+}
+
+#autoDictation {
+  padding: 10px 20px;
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+#autoDictation:hover {
+  background-color: #f57c00;
+}
+
+#stopDictation {
+  padding: 10px 20px;
+  background-color: #ff4444; /* Red background */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  margin-left: 10px; /* Add some space between the buttons */
+}
+
+#stopDictation:hover {
+  background-color: #cc0000; /* Darker red on hover */
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  background-color: #ddd; /* Light grey background */
+  color: #333; /* Dark text */
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+/* Word Counter */
+#wordCount {
+  color: #333; /* Dark text for word counter */
+}
+
+
 /* Add this to your existing styles.css file */
 
 /* Current word highlighting */
