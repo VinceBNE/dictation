@@ -187,37 +187,53 @@ document.addEventListener('DOMContentLoaded', function() {
   let dictationActive = false;
 
   // Start auto-dictation
-  function startAutoDictation() {
-    console.log('Starting auto-dictation');
-    const interval = parseInt(document.getElementById('interval').value) * 1000;
-    if (wordArray.length === 0) {
-      alert('Please load words first');
-      return;
-    }
-    
-    dictationActive = true;
-    currentWordIndex = 0;
-    document.getElementById('autoDictation').disabled = true;
-    document.getElementById('stopDictation').disabled = false;
-    
-    // Mask all words with asterisks
-    maskWords();
-    
-    // Highlight and speak the first word
-    highlightCurrentWord(currentWordIndex);
-    speakWord(wordArray[currentWordIndex]);
-    
-    // Set up interval for subsequent words
-    autoDictationInterval = setInterval(() => {
-      currentWordIndex++;
-      if (currentWordIndex >= wordArray.length) {
-        stopAutoDictation();
-        return;
-      }
-      highlightCurrentWord(currentWordIndex);
-      speakWord(wordArray[currentWordIndex]);
-    }, interval);
+// Start auto-dictation
+function startAutoDictation() {
+  console.log('Starting auto-dictation');
+  const interval = parseInt(document.getElementById('interval').value) * 1000;
+  const repeatCount = parseInt(document.getElementById('repeatCount').value); // Get repeat count
+
+  if (wordArray.length === 0) {
+    alert('Please load words first');
+    return;
   }
+
+  dictationActive = true;
+  currentWordIndex = 0;
+  document.getElementById('autoDictation').disabled = true;
+  document.getElementById('stopDictation').disabled = false;
+
+  // Mask all words with asterisks
+  maskWords();
+
+  // Function to handle word repetition
+  function speakWordWithRepetition(word, repeatCount) {
+    let repeatIndex = 0;
+
+    function speakNextRepetition() {
+      if (repeatIndex < repeatCount) {
+        speakWord(word);
+        repeatIndex++;
+        setTimeout(speakNextRepetition, interval); // Wait for the interval before repeating
+      } else {
+        // Move to the next word after all repetitions are done
+        currentWordIndex++;
+        if (currentWordIndex >= wordArray.length) {
+          stopAutoDictation();
+          return;
+        }
+        highlightCurrentWord(currentWordIndex);
+        speakWordWithRepetition(wordArray[currentWordIndex], repeatCount);
+      }
+    }
+
+    speakNextRepetition();
+  }
+
+  // Highlight and speak the first word with repetition
+  highlightCurrentWord(currentWordIndex);
+  speakWordWithRepetition(wordArray[currentWordIndex], repeatCount);
+}
 
   // Stop auto-dictation
   function stopAutoDictation() {
