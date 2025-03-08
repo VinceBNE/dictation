@@ -266,7 +266,7 @@ function stopAutoDictation() {
   
   // Restore original word list display
   displayWords(wordArray);
-
+}
 
 
   // Process CSV URL and load words
