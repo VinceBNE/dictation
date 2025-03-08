@@ -187,66 +187,77 @@ document.addEventListener('DOMContentLoaded', function() {
   let dictationActive = false;
 
   // Start auto-dictation
-// Start auto-dictation
-function startAutoDictation() {
-  console.log('Starting auto-dictation');
-  const interval = parseInt(document.getElementById('interval').value) * 1000;
-  const repeatCount = parseInt(document.getElementById('repeatCount').value); // Get repeat count
-
-  if (wordArray.length === 0) {
-    alert('Please load words first');
-    return;
-  }
-
-  dictationActive = true;
-  currentWordIndex = 0;
-  document.getElementById('autoDictation').disabled = true;
-  document.getElementById('stopDictation').disabled = false;
-
-  // Mask all words with asterisks
-  maskWords();
-
-  // Function to handle word repetition
-  function speakWordWithRepetition(word, repeatCount) {
-    let repeatIndex = 0;
-
-    function speakNextRepetition() {
-      if (repeatIndex < repeatCount) {
-        speakWord(word);
-        repeatIndex++;
-        setTimeout(speakNextRepetition, interval); // Wait for the interval before repeating
-      } else {
-        // Move to the next word after all repetitions are done
-        currentWordIndex++;
-        if (currentWordIndex >= wordArray.length) {
-          stopAutoDictation();
-          return;
-        }
-        highlightCurrentWord(currentWordIndex);
-        speakWordWithRepetition(wordArray[currentWordIndex], repeatCount);
-      }
+  function startAutoDictation() {
+    console.log('Starting auto-dictation');
+    const interval = parseInt(document.getElementById('interval').value) * 1000;
+    const repeatCount = parseInt(document.getElementById('repeatCount').value); // Get repeat count
+  
+    if (wordArray.length === 0) {
+      alert('Please load words first');
+      return;
     }
-
-    speakNextRepetition();
+  
+    dictationActive = true;
+    currentWordIndex = 0;
+    document.getElementById('autoDictation').disabled = true;
+    document.getElementById('stopDictation').disabled = false;
+  
+    // Mask all words with asterisks
+    maskWords();
+  
+    // Function to handle word repetition
+    function speakWordWithRepetition(word, repeatCount) {
+      let repeatIndex = 0;
+  
+      function speakNextRepetition() {
+        if (repeatIndex < repeatCount) {
+          speakWord(word);
+          repeatIndex++;
+          setTimeout(speakNextRepetition, interval); // Wait for the interval before repeating
+        } else {
+          // Move to the next word after all repetitions are done
+          currentWordIndex++;
+          if (currentWordIndex >= wordArray.length) {
+            stopAutoDictation(); // Stop auto-dictation when all words are done
+            return;
+          }
+          highlightCurrentWord(currentWordIndex);
+          speakWordWithRepetition(wordArray[currentWordIndex], repeatCount);
+        }
+      }
+  
+      speakNextRepetition();
+    }
+  
+    // Highlight and speak the first word with repetition
+    highlightCurrentWord(currentWordIndex);
+    speakWordWithRepetition(wordArray[currentWordIndex], repeatCount);
   }
 
-  // Highlight and speak the first word with repetition
-  highlightCurrentWord(currentWordIndex);
-  speakWordWithRepetition(wordArray[currentWordIndex], repeatCount);
+// Stop auto-dictation
+function stopAutoDictation() {
+  console.log('Stopping auto-dictation');
+  
+  // Clear the interval for auto-dictation
+  if (autoDictationInterval) {
+    clearInterval(autoDictationInterval);
+    autoDictationInterval = null; // Reset the interval variable
+  }
+  
+  // Stop any ongoing speech
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+  
+  // Reset UI elements
+  document.getElementById('autoDictation').disabled = false;
+  document.getElementById('stopDictation').disabled = true;
+  dictationActive = false;
+  
+  // Restore original word list display
+  displayWords(wordArray);
 }
 
-  // Stop auto-dictation
-  function stopAutoDictation() {
-    console.log('Stopping auto-dictation');
-    clearInterval(autoDictationInterval);
-    window.speechSynthesis.cancel(); // Stop any ongoing speech
-    document.getElementById('autoDictation').disabled = false;
-    document.getElementById('stopDictation').disabled = true;
-    dictationActive = false;
-    
-    // Restore original word list display
-    displayWords(wordArray);
-  }
 
   // Process CSV URL and load words
   function processCSVUrl(url) {
