@@ -41,35 +41,20 @@ document.addEventListener('DOMContentLoaded', function() {
   // Function to select the best male Australian voice or acceptable alternative
   function getBestVoice() {
     const allVoices = window.speechSynthesis.getVoices();
-    console.log('Available voices:', allVoices.map(v => `${v.name} (${v.lang}) [${v.localService ? 'local' : 'remote'}]`));
-    
-    // First priority: Daniel (Australian male) or other Australian male voices
-    let voice = allVoices.find(v => 
-      (v.name.includes('Daniel') || v.name.toLowerCase().includes('australian male')) && 
-      v.lang.startsWith('en')
-    );
-    
-    // Second priority: Any Australian voice
+    let voice = allVoices.find(v => v.name.includes('Daniel') && v.lang === 'en-AU');
+    if (!voice) {
+      voice = allVoices.find(v => v.lang === 'en-AU' && v.name.toLowerCase().includes('male'));
+    }
     if (!voice) {
       voice = allVoices.find(v => v.lang === 'en-AU');
     }
-    
-    // Third priority: Any English male voice
     if (!voice) {
-      voice = allVoices.find(v => 
-        (v.name.includes('Male') || v.name.includes('David') || 
-         v.name.includes('Mark') || v.name.includes('James') || 
-         v.name.includes('Paul') || v.name.includes('George')) && 
-        v.lang.startsWith('en')
-      );
+      voice = allVoices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('male'));
     }
-    
-    // Fourth priority: Any English voice
     if (!voice) {
       voice = allVoices.find(v => v.lang.startsWith('en'));
     }
-    
-    console.log('Selected voice:', voice ? `${voice.name} (${voice.lang})` : 'Default voice');
+    console.log('Selected voice:', voice ? voice.name : 'Default');
     return voice;
   }
   
