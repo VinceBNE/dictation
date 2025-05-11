@@ -3,49 +3,68 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kids Dictation Practice</title>
+  <title>Dictation Helper</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<!-- Back Button -->
+<a href="https://InfraPCS.com" class="back-button">InfraPCS</a>
   <!-- Top Section -->
   <div class="top-section">
-    <h1>Welcome to Dictation Practice! - Version 4.5</h1>
-    <p>Type or paste your word list below, or provide a CSV URL. Click the speaker icon to hear the word, or use the auto-dictation button to practice!</p>
+    <h1>Dictation Helper</h1>
+    <div class="version">Version 1.0</div>
+    <p class="intro">This is a tool designed to help parents or kids perform word dictation. Users can provide their own word list by separating them with commas or use a pre-defined list. In settings, users can select the auto-dictation interval and repeat counts for each word.</p>
   </div>
 
   <!-- Main Content -->
   <div class="main-content">
-    <!-- Input Section -->
-    <div class="input-section">
-      <h2>Input Words</h2>
-      <textarea id="wordInput" placeholder="Type or paste words here, separated by commas..."></textarea>
-      <input type="text" id="csvUrlInput" placeholder="Or enter a CSV URL...">
-      <button id="loadWords">Load Words</button>
-      <label for="interval">Auto-Dictation Interval (seconds):</label>
-      <input type="number" id="interval" value="2" min="1">
 
-      <!-- Predefined CSV Buttons -->
-      <div class="csv-buttons">
-        <h3>Predefined CSV URLs:</h3>
+    <!-- Input Section Wrapper -->
+    <div class="input-wrapper">
+      <!-- Section 1: User Input -->
+      <div class="input-section input-user">
+        <h4>User Input Words</h4>
+        <textarea id="wordInput" placeholder="Type or paste words here, separated by commas..."></textarea>
+        <input type="text" id="csvUrlInput" placeholder="Or enter a CSV URL...">
+        <button id="loadWords">Load Words</button>
+      </div>
+
+      <!-- Section 2: Predefined CSV -->
+      <div class="input-section input-predefined">
+        <h4>Pre-defined Word Lists</h4>
         <button class="csv-button" data-url="wordlist/year6_1.csv">Year6 List 1</button>
         <button class="csv-button" data-url="wordlist/year6_2.csv">Year6 List 2</button>
         <button class="csv-button" data-url="wordlist/spellingbee6.csv">Spelling Bee 6</button>
-        <button class="csv-button" data-url="https://example.com/words4.csv">CSV 4</button>
-        <button class="csv-button" data-url="https://example.com/words5.csv">CSV 5</button>
-        <button class="csv-button" data-url="https://example.com/words6.csv">CSV 6</button>
-        <button class="csv-button" data-url="https://example.com/words7.csv">CSV 7</button>
-        <button class="csv-button" data-url="https://example.com/words8.csv">CSV 8</button>
-        <button class="csv-button" data-url="https://example.com/words9.csv">CSV 9</button>
-        <button class="csv-button" data-url="https://example.com/words10.csv">CSV 10</button>
+        <select id="additionalCsvList">
+          <option value="">More Lists...</option>
+          <option value="wordlist/spellingbee7.csv">Spelling Bee 7</option>
+          <option value="wordlist/year7_1.csv">Year7 List 1</option>
+          <option value="wordlist/advanced.csv">Advanced List</option>
+        </select>
+      </div>
+
+      <!-- Section 3: Settings -->
+      <div class="input-section input-settings">
+        <h4>Settings</h4>
+        <label for="interval">Auto-Dictation Interval (seconds):</label>
+        <input type="number" id="interval" value="2" min="1">
+
+        <label for="repeatCount">Repeat Each Word (times):</label>
+        <input type="number" id="repeatCount" value="2" min="1">
       </div>
     </div>
 
     <!-- Output Section -->
     <div class="output-section">
-      <h2>Word List</h2>
-      <ul id="wordList"></ul>
+      <h3>
+        Word List
+        <button id="voiceTest">Test Voice</button>
+      </h3>
+
       <button id="autoDictation">Start Auto-Dictation</button>
+
       <button id="stopDictation">Stop Auto-Dictation</button>
+      <ul id="wordList"></ul>
     </div>
   </div>
 
