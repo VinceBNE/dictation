@@ -41,20 +41,35 @@ document.addEventListener('DOMContentLoaded', function() {
   // Function to select the best male Australian voice or acceptable alternative
   function getBestVoice() {
     const allVoices = window.speechSynthesis.getVoices();
-    let voice = allVoices.find(v => v.name.includes('Daniel') && v.lang === 'en-AU');
-    if (!voice) {
-      voice = allVoices.find(v => v.lang === 'en-AU' && v.name.toLowerCase().includes('male'));
-    }
+    console.log('Available voices:', allVoices.map(v => `${v.name} (${v.lang}) [${v.localService ? 'local' : 'remote'}]`));
+    
+    // First priority: Daniel (Australian male) or other Australian male voices
+    let voice = allVoices.find(v => 
+      (v.name.includes('Daniel') || v.name.toLowerCase().includes('australian male')) && 
+      v.lang.startsWith('en')
+    );
+    
+    // Second priority: Any Australian voice
     if (!voice) {
       voice = allVoices.find(v => v.lang === 'en-AU');
     }
+    
+    // Third priority: Any English male voice
     if (!voice) {
-      voice = allVoices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('male'));
+      voice = allVoices.find(v => 
+        (v.name.includes('Male') || v.name.includes('David') || 
+         v.name.includes('Mark') || v.name.includes('James') || 
+         v.name.includes('Paul') || v.name.includes('George')) && 
+        v.lang.startsWith('en')
+      );
     }
+    
+    // Fourth priority: Any English voice
     if (!voice) {
       voice = allVoices.find(v => v.lang.startsWith('en'));
     }
-    console.log('Selected voice:', voice ? voice.name : 'Default');
+    
+    console.log('Selected voice:', voice ? `${voice.name} (${voice.lang})` : 'Default voice');
     return voice;
   }
   
@@ -170,52 +185,89 @@ document.addEventListener('DOMContentLoaded', function() {
   let currentWordIndex = 0;
   let wordArray = [];
   let dictationActive = false;
+  let isStopped = false; // Add a flag to track if dictation is stopped
 
-  // Start auto-dictation
-  function startAutoDictation() {
-    console.log('Starting auto-dictation');
-    const interval = parseInt(document.getElementById('interval').value) * 1000;
-    if (wordArray.length === 0) {
-      alert('Please load words first');
-      return;
-    }
-    
-    dictationActive = true;
-    currentWordIndex = 0;
-    document.getElementById('autoDictation').disabled = true;
-    document.getElementById('stopDictation').disabled = false;
-    
-    // Mask all words with asterisks
-    maskWords();
-    
-    // Highlight and speak the first word
-    highlightCurrentWord(currentWordIndex);
-    speakWord(wordArray[currentWordIndex]);
-    
-    // Set up interval for subsequent words
-    autoDictationInterval = setInterval(() => {
-      currentWordIndex++;
-      if (currentWordIndex >= wordArray.length) {
-        stopAutoDictation();
-        return;
+// Start auto-dictation
+function startAutoDictation() {
+  console.log('Starting auto-dictation');
+  const interval = parseInt(document.getElementById('interval').value) * 1000;
+  const repeatCount = parseInt(document.getElementById('repeatCount').value); // Get repeat count
+
+  if (wordArray.length === 0) {
+    alert('Please load words first');
+    return;
+  }
+
+  dictationActive = true;
+  isStopped = false; // Reset the stop flag
+  currentWordIndex = 0;
+  document.getElementById('autoDictation').disabled = true;
+  document.getElementById('stopDictation').disabled = false;
+
+  // Mask all words with asterisks
+  maskWords();
+
+  // Function to handle word repetition
+  function speakWordWithRepetition(word, repeatCount) {
+    let repeatIndex = 0;
+
+    function speakNextRepetition() {
+      if (isStopped) {
+        console.log('Dictation stopped during repetition');
+        return; // Exit if dictation is stopped
       }
-      highlightCurrentWord(currentWordIndex);
-      speakWord(wordArray[currentWordIndex]);
-    }, interval);
+
+      if (repeatIndex < repeatCount) {
+        speakWord(word);
+        repeatIndex++;
+        setTimeout(speakNextRepetition, interval); // Wait for the interval before repeating
+      } else {
+        // Move to the next word after all repetitions are done
+        currentWordIndex++;
+        if (currentWordIndex >= wordArray.length || isStopped) {
+          stopAutoDictation(); // Stop auto-dictation when all words are done or if stopped
+          return;
+        }
+        highlightCurrentWord(currentWordIndex);
+        speakWordWithRepetition(wordArray[currentWordIndex], repeatCount);
+      }
+    }
+
+    speakNextRepetition();
   }
 
-  // Stop auto-dictation
-  function stopAutoDictation() {
-    console.log('Stopping auto-dictation');
+  // Highlight and speak the first word with repetition
+  highlightCurrentWord(currentWordIndex);
+  speakWordWithRepetition(wordArray[currentWordIndex], repeatCount);
+}
+
+// Stop auto-dictation
+function stopAutoDictation() {
+  console.log('Stopping auto-dictation');
+  
+  // Set the stop flag to true
+  isStopped = true;
+
+  // Clear the interval for auto-dictation
+  if (autoDictationInterval) {
     clearInterval(autoDictationInterval);
-    window.speechSynthesis.cancel(); // Stop any ongoing speech
-    document.getElementById('autoDictation').disabled = false;
-    document.getElementById('stopDictation').disabled = true;
-    dictationActive = false;
-    
-    // Restore original word list display
-    displayWords(wordArray);
+    autoDictationInterval = null; // Reset the interval variable
   }
+  
+  // Stop any ongoing speech
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+  
+  // Reset UI elements
+  document.getElementById('autoDictation').disabled = false;
+  document.getElementById('stopDictation').disabled = true;
+  dictationActive = false;
+  
+  // Restore original word list display
+  displayWords(wordArray);
+}
+
 
   // Process CSV URL and load words
   function processCSVUrl(url) {
@@ -306,15 +358,46 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Add a voice test button to check available voices
-  const outputSection = document.querySelector('.output-section');
-  const voiceTestButton = document.createElement('button');
-  voiceTestButton.id = 'voiceTest';
-  voiceTestButton.textContent = 'Test Voice';
-  voiceTestButton.style.marginTop = '20px';
-  voiceTestButton.addEventListener('click', () => {
-    speakWord('This is a test of the dictation voice');
-  });
-  outputSection.appendChild(voiceTestButton);
+  //  const outputSection = document.querySelector('.output-section');
+  //  const voiceTestButton = document.createElement('button');
+  // voiceTestButton.id = 'voiceTest';
+  //  voiceTestButton.textContent = 'Test Voice';
+  //  voiceTestButton.style.marginTop = '20px';
+  //  voiceTestButton.addEventListener('click', () => {
+  //    speakWord('This is a test of the dictation voice');
+  //  });
+    //outputSection.appendChild(voiceTestButton);
+
+
+
+    const voiceTestBtn = document.getElementById('voiceTest');
+  if (voiceTestBtn) {
+    voiceTestBtn.addEventListener('click', () => {
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance('This is a test of the dictation voice');
+        const voices = speechSynthesis.getVoices();
+        const preferredVoice = voices.find(v => v.lang === 'en-AU') || voices.find(v => v.lang.startsWith('en'));
+        if (preferredVoice) utterance.voice = preferredVoice;
+        utterance.rate = 0.9;
+        utterance.pitch = 0.8;
+        utterance.volume = 1.0;
+        speechSynthesis.speak(utterance);
+      }
+    });
+  }
+
+  // Handle dropdown for additional CSVs
+  const additionalCsvList = document.getElementById('additionalCsvList');
+  if (additionalCsvList) {
+    additionalCsvList.addEventListener('change', function () {
+      const selectedUrl = this.value;
+      if (selectedUrl) {
+        document.getElementById('csvUrlInput').value = selectedUrl;
+        document.getElementById('loadWords').click();
+      }
+    });
+  }
 
   console.log('Script initialization complete');
+
 });
