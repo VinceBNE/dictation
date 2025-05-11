@@ -3,7 +3,7 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: grey; /* Black background for the entire page */
+  background-color: black; /* Black background for the entire page */
   color: white; /* Default text color */
 }
 
@@ -11,7 +11,7 @@ body {
 .top-section {
   background-image: url('kids-background.jpg'); /* Add a kid-friendly image */
   background-size: cover;
-  color: black; /* Black font color for welcome and instruction */
+  color: white; /* Black font color for welcome and instruction */
   text-align: center;
   padding: 20px;
 }
@@ -55,7 +55,7 @@ body {
 }
 
 .input-section button:hover {
-  background-color: #f0f0f0;
+  background-color: #1976d2;
 }
 
 /* CSV Buttons */
@@ -87,7 +87,7 @@ body {
 /* Output Section */
 .output-section {
   flex: 1;
-  background-color: #f0f0f0; /* Light grey background */
+  background-color: #F8F4E1; /* Light grey background */
   padding: 20px;
   border-radius: 10px;
   color: #333; /* Dark text for better readability */
@@ -131,6 +131,21 @@ body {
   background-color: #f57c00;
 }
 
+#stopDictation {
+  padding: 10px 20px;
+  background-color: #ff4444; /* Red background */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  margin-left: 0px; /* Add some space between the buttons */
+}
+
+#stopDictation:hover {
+  background-color: #cc0000; /* Darker red on hover */
+}
+
 /* Loading Spinner */
 .loading-spinner {
   display: flex;
@@ -146,4 +161,114 @@ body {
 /* Word Counter */
 #wordCount {
   color: #333; /* Dark text for word counter */
+}
+
+
+/* Add this to your existing styles.css file */
+
+/* Current word highlighting */
+.current-word {
+  background-color: #4682B4; /* Steel blue background */
+  color: white !important;
+  font-weight: bold;
+  border-radius: 5px;
+  padding: 5px !important;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  position: relative;
+  animation: pulse 1s infinite;
+}
+
+/* Pulse animation for current word */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 10px rgba(70, 130, 180, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Speaker icon in current word */
+.current-word .speaker-icon {
+  filter: brightness(1.5);
+}
+
+/* Style for the repeat count input */
+#repeatCount {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: white;
+  color: #333;
+}
+
+/* Additional styling for split input sections */
+.input-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* spacing between sections */
+  margin-right: 15px;
+}
+
+.input-section.input-user {
+  background-color: #FFA55D; /* Light cyan */
+  max-height: 250px;
+//  overflow-y: auto;
+}
+
+.input-section.input-predefined {
+  background-color: #FFDF88; /* Light pink */
+  max-height: 250px;
+//  overflow-y: auto;
+}
+
+.input-section.input-settings {
+  background-color: #ACC572; /* Light green */
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.input-section {
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+
+/* Ensure textarea stays within section */
+.input-section textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  max-width: 100%;
+}
+
+.input-section input {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  max-width: 100%;
+}
+
+
+.back-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #74512D;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-size: 14px;
+  z-index: 9999;
+}
+
+.back-button:hover {
+  background-color: #455a64;
 }
